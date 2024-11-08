@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+package db;
+
+option go_package = "gen/v1;generated";
+
+service DB {
+    rpc CreateUser(CreateUserRequest) returns (CreateUserResponce);
+    rpc GetUser(GetUserRequest) returns (GetUserResponce);
+}
+
+message CreateUserRequest {
+    int64 user_id = 1; 
+}
+
+message CreateUserResponce {
+    bool result = 1;
+    string error = 2;
+}
+
+message GetUserRequest {
+    int64 user_id = 1; 
+}
+
+message GetUserResponce {
+    bool result = 1;
+    string error = 2;
+}
