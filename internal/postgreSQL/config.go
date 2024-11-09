@@ -6,11 +6,12 @@ import (
 )
 
 type Config struct {
-	DBName   string `json:"dbName"`
-	User     string `json:"user"`
-	Password string `json:"password"`
-	Host     string `json:"host"`
-	Port     string `json:"port"`
+    DBName     string `json:"dbName"`
+    User       string `json:"user"`
+    Password   string `json:"password"`
+    Host       string `json:"host"`
+    Port       string `json:"port"`
+    Tablespace string `json:"tablespace"`
 }
 
 func initPostgreSqlConfig(configPath string) *Config {

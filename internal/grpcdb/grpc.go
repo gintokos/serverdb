@@ -2,22 +2,25 @@ package grpcdb
 
 import (
 	"context"
-	generated "vpagrSite/pkg/protos/gen/v1"
+	"serverdb/pkg/logger"
+	generated "serverdb/protos/gen/v1"
 
 	"google.golang.org/grpc"
 )
 
 type serverAPI struct {
 	generated.UnimplementedDBServer
-	db DB
+	logger *logger.CustomLogger
+	db     DB
 }
 
-func NewServerAPI(db DB) *serverAPI {
+func NewServerAPI(db DB, logger *logger.CustomLogger) *serverAPI {
 	if err := db.MustInitDB(); err != nil {
 		panic(err)
 	}
 	return &serverAPI{
-		db: db,
+		logger: logger,
+		db:     db,
 	}
 }
 
