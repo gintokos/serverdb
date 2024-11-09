@@ -6,10 +6,10 @@ import (
 	"serverdb/internal/domen"
 	lg "serverdb/pkg/logger"
 
+	_ "github.com/lib/pq"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
-	_ "github.com/lib/pq"
 )
 
 type PostgreSql struct {
@@ -28,7 +28,13 @@ func NewPostgreSql(dbconfigpath string, logger *lg.CustomLogger) *PostgreSql {
 }
 
 func (postgre *PostgreSql) MustInitDB() error {
-	err := postgre.createDBIfNotExists()
+	err := postgre.initializeTablespace("D:/storage")
+	if err != nil {
+		postgre.logger.Error("Error initializing tablespace: ", err)
+		panic(err)
+	}
+
+	err = postgre.createDBIfNotExists()
 	if err != nil {
 		postgre.logger.Error("Error on creating database: ", err)
 		panic(err)
@@ -46,31 +52,70 @@ func (postgre *PostgreSql) MustInitDB() error {
 		panic(err)
 	}
 
-	postgre.logger.Info("Database was initilized")
+	postgre.logger.Info("Database was initialized")
+	return nil
+}
+
+func (postgre *PostgreSql) initializeTablespace(storagePath string) error {
+	dsn := fmt.Sprintf("postgres://%s:%s@%s:%s?sslmode=disable",
+		postgre.config.User,
+		postgre.config.Password,
+		postgre.config.Host,
+		postgre.config.Port)
+
+	db, err := sql.Open("postgres", dsn)
+	if err != nil {
+		return fmt.Errorf("error opening connection: %w", err)
+	}
+	defer db.Close()
+
+	// Check if tablespace exists
+	var exists bool
+	query := fmt.Sprintf("SELECT EXISTS(SELECT 1 FROM pg_tablespace WHERE spcname = '%s')",
+		postgre.config.Tablespace)
+	err = db.QueryRow(query).Scan(&exists)
+	if err != nil {
+		return fmt.Errorf("error checking tablespace existence: %w", err)
+	}
+
+	if !exists {
+		createTablespaceQuery := fmt.Sprintf("CREATE TABLESPACE %s LOCATION '%s'",
+			postgre.config.Tablespace, storagePath)
+
+		_, err = db.Exec(createTablespaceQuery)
+		if err != nil {
+			return fmt.Errorf("error creating tablespace: %w", err)
+		}
+		postgre.logger.Info("Tablespace created successfully")
+	}
 
 	return nil
 }
 
 func (postgre *PostgreSql) createDBIfNotExists() error {
-	dsn := fmt.Sprintf("host=%s port=%s user=%s password=%s sslmode=disable",
-		postgre.config.Host, postgre.config.Port, postgre.config.User, postgre.config.Password)
+	dsn := fmt.Sprintf("postgres://%s:%s@%s:%s?sslmode=disable",
+		postgre.config.User,
+		postgre.config.Password,
+		postgre.config.Host,
+		postgre.config.Port)
 	postgre.dsn = dsn
 
 	db, err := sql.Open("postgres", dsn)
 	if err != nil {
-		return err
+		return fmt.Errorf("error opening connection: %w", err)
 	}
 	defer db.Close()
 
 	var exists bool
-	query := fmt.Sprintf("SELECT EXISTS(SELECT 1 FROM pg_database WHERE datname = '%s')", postgre.config.DBName)
+	query := fmt.Sprintf("SELECT EXISTS(SELECT 1 FROM pg_database WHERE datname = '%s')",
+		postgre.config.DBName)
 	err = db.QueryRow(query).Scan(&exists)
 	if err != nil {
-		return err
+		return fmt.Errorf("error checking database existence: %w", err)
 	}
 
 	if !exists {
-		postgre.logger.Info("Database was not exists, creating database")
+		postgre.logger.Info("Database does not exist, creating database")
 		createQuery := fmt.Sprintf("CREATE DATABASE %s", postgre.config.DBName)
 
 		if postgre.config.Tablespace != "" {
@@ -79,7 +124,7 @@ func (postgre *PostgreSql) createDBIfNotExists() error {
 
 		_, err = db.Exec(createQuery)
 		if err != nil {
-			return err
+			return fmt.Errorf("error creating database: %w", err)
 		}
 	} else {
 		postgre.logger.Info("Database exists")
@@ -88,11 +133,12 @@ func (postgre *PostgreSql) createDBIfNotExists() error {
 }
 
 func (postgre *PostgreSql) connectDB() error {
+	// Update connection string to include database name
 	db, err := gorm.Open(postgres.Open(postgre.dsn), &gorm.Config{
 		Logger: logger.Default.LogMode(logger.Silent),
 	})
 	if err != nil {
-		return err
+		return fmt.Errorf("error connecting to database: %w", err)
 	}
 
 	postgre.db = db
