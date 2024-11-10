@@ -24,5 +24,6 @@ message GetUserRequest {
 
 message GetUserResponce {
     bool result = 1;
-    string error = 2;
+    string CreatedAt = 2;
+    string error = 3;
 }

@@ -46,20 +46,20 @@ func (s *serverAPI) CreateUser(ctx context.Context, req *generated.CreateUserReq
 	return &resp, err
 }
 
-// return createdAt
 func (s *serverAPI) GetUser(ctx context.Context, req *generated.GetUserRequest) (*generated.GetUserResponce, error) {
 	s.logger.Info("Get GetUser endpoint")
 
 	var errmsg string
-	err := s.db.GetUserRecord(req.UserId)
+	user, err := s.db.GetUserRecord(req.UserId)
 	if err != nil {
 		s.logger.Error("Error on geting record", err)
 		errmsg = err.Error()
 	}
 
 	resp := generated.GetUserResponce{
-		Result: true,
-		Error:  errmsg,
+		Result:    true,
+		CreatedAt: user.CreatedAt.Format("02.01.2006 15:04:05"),
+		Error:     errmsg,
 	}
 
 	return &resp, err

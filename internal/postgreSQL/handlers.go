@@ -15,13 +15,13 @@ func (postgre *PostgreSql) CreateUserRecord(id int64) error {
 		return fmt.Errorf("userid must be greater than 0")
 	}
 
-	err := postgre.GetUserRecord(id)
+	_, err := postgre.GetUserRecord(id)
 	if err != nil {
 		if !errors.Is(err, gorm.ErrRecordNotFound) {
 			return err
 		}
 	} else {
-		return fmt.Errorf("record with this id was created before")	
+		return fmt.Errorf("record with this id was created before")
 	}
 
 	record := domen.User{
@@ -36,16 +36,15 @@ func (postgre *PostgreSql) CreateUserRecord(id int64) error {
 	return nil
 }
 
-func (postgre *PostgreSql) GetUserRecord(id int64) error {
+func (postgre *PostgreSql) GetUserRecord(id int64) (domen.User, error) {
 	db := postgre.db
 
 	var user domen.User
 	result := db.First(&user, id)
 
 	if result.Error != nil {
-		return result.Error
+		return user, result.Error
 	}
 
-	return nil
+	return user, nil
 }
-
