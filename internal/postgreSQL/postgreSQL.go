@@ -15,7 +15,7 @@ import (
 type PostgreSql struct {
 	dsn    string
 	db     *gorm.DB
-	config Config
+	config ConfigPostgresSql
 	logger *lg.CustomLogger
 }
 

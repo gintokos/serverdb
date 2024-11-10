@@ -33,7 +33,7 @@ func (s *serverAPI) CreateUser(ctx context.Context, req *generated.CreateUserReq
 
 	var errmsg string
 	err := s.db.CreateUserRecord(req.UserId)
-	if err != nil {	
+	if err != nil {
 		s.logger.Error("Error on creating record", err)
 		errmsg = err.Error()
 	}
@@ -46,13 +46,13 @@ func (s *serverAPI) CreateUser(ctx context.Context, req *generated.CreateUserReq
 	return &resp, err
 }
 
-// return createdat
+// return createdAt
 func (s *serverAPI) GetUser(ctx context.Context, req *generated.GetUserRequest) (*generated.GetUserResponce, error) {
 	s.logger.Info("Get GetUser endpoint")
-	
+
 	var errmsg string
 	err := s.db.GetUserRecord(req.UserId)
-	if err != nil {	
+	if err != nil {
 		s.logger.Error("Error on geting record", err)
 		errmsg = err.Error()
 	}

@@ -6,6 +6,10 @@ import (
 )
 
 type Config struct {
+    ConfigPostgresSql ConfigPostgresSql `json:"ConfigPostgresSql"`
+}
+
+type ConfigPostgresSql struct {
 	DBName         string `json:"dbName"`
 	User           string `json:"user"`
 	Password       string `json:"password"`
@@ -15,7 +19,7 @@ type Config struct {
 	TablespacePath string `json:"tablespacepath"`
 }
 
-func initPostgreSqlConfig(configPath string) *Config {
+func initPostgreSqlConfig(configPath string) *ConfigPostgresSql {
 	data, err := os.ReadFile(configPath)
 	if err != nil {
 		panic(err)
@@ -26,5 +30,5 @@ func initPostgreSqlConfig(configPath string) *Config {
 		panic(err)
 	}
 
-	return &config
+	return &config.ConfigPostgresSql
 }
