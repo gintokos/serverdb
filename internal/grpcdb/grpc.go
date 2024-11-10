@@ -29,12 +29,38 @@ func Register(gRPC *grpc.Server, serverapi *serverAPI) {
 }
 
 func (s *serverAPI) CreateUser(ctx context.Context, req *generated.CreateUserRequest) (*generated.CreateUserResponce, error) {
-	// uID = req.GetUserId()
-	panic("impl me")
+	s.logger.Info("Get CreateUser endpoint")
 
-	return nil, nil
+	var errmsg string
+	err := s.db.CreateUserRecord(req.UserId)
+	if err != nil {	
+		s.logger.Error("Error on creating record", err)
+		errmsg = err.Error()
+	}
+
+	resp := generated.CreateUserResponce{
+		Result: true,
+		Error:  errmsg,
+	}
+
+	return &resp, err
 }
+
+// return createdat
 func (s *serverAPI) GetUser(ctx context.Context, req *generated.GetUserRequest) (*generated.GetUserResponce, error) {
-	panic("impl me")
-	return nil, nil
+	s.logger.Info("Get GetUser endpoint")
+	
+	var errmsg string
+	err := s.db.GetUserRecord(req.UserId)
+	if err != nil {	
+		s.logger.Error("Error on geting record", err)
+		errmsg = err.Error()
+	}
+
+	resp := generated.GetUserResponce{
+		Result: true,
+		Error:  errmsg,
+	}
+
+	return &resp, err
 }

@@ -28,7 +28,7 @@ func NewPostgreSql(dbconfigpath string, logger *lg.CustomLogger) *PostgreSql {
 }
 
 func (postgre *PostgreSql) MustInitDB() error {
-	err := postgre.initializeTablespace("D:/storage")
+	err := postgre.initializeTablespace(postgre.config.TablespacePath)
 	if err != nil {
 		postgre.logger.Error("Error initializing tablespace: ", err)
 		panic(err)
@@ -61,7 +61,10 @@ func (postgre *PostgreSql) initializeTablespace(storagePath string) error {
 		postgre.config.User,
 		postgre.config.Password,
 		postgre.config.Host,
-		postgre.config.Port)
+		postgre.config.Port,
+	)
+	postgre.dsn = dsn
+	postgre.logger.Info(dsn)
 
 	db, err := sql.Open("postgres", dsn)
 	if err != nil {
@@ -87,20 +90,15 @@ func (postgre *PostgreSql) initializeTablespace(storagePath string) error {
 			return fmt.Errorf("error creating tablespace: %w", err)
 		}
 		postgre.logger.Info("Tablespace created successfully")
+	} else {
+		postgre.logger.Info("Tablespace exists")
 	}
 
 	return nil
 }
 
 func (postgre *PostgreSql) createDBIfNotExists() error {
-	dsn := fmt.Sprintf("postgres://%s:%s@%s:%s?sslmode=disable",
-		postgre.config.User,
-		postgre.config.Password,
-		postgre.config.Host,
-		postgre.config.Port)
-	postgre.dsn = dsn
-
-	db, err := sql.Open("postgres", dsn)
+	db, err := sql.Open("postgres", postgre.dsn)
 	if err != nil {
 		return fmt.Errorf("error opening connection: %w", err)
 	}
@@ -133,8 +131,15 @@ func (postgre *PostgreSql) createDBIfNotExists() error {
 }
 
 func (postgre *PostgreSql) connectDB() error {
+	dsn := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable",
+		postgre.config.User,
+		postgre.config.Password,
+		postgre.config.Host,
+		postgre.config.Port,
+		postgre.config.DBName,
+	)
 	// Update connection string to include database name
-	db, err := gorm.Open(postgres.Open(postgre.dsn), &gorm.Config{
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
 		Logger: logger.Default.LogMode(logger.Silent),
 	})
 	if err != nil {

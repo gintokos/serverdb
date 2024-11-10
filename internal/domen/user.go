@@ -3,6 +3,6 @@ package domen
 import "time"
 
 type User struct {
-	TelegramID uint `gorm:"primaryKey"`
+	TelegramID int64 `gorm:"primaryKey"`
 	CreatedAt  time.Time
 }
