@@ -30,7 +30,7 @@ run:
 
 .PHONY: push
 push:
-	@if [ -z "$(NAME_COMMIT)"]; then echo "Needed NAME_COMMIT"; exit 1;fi
+	@if [ -z "$(NAME_COMMIT)" ]; then echo "Needed NAME_COMMIT"; exit 1; fi
 	git add .
 	git commit -m "$(NAME_COMMIT)"
 	git push -u origin main
