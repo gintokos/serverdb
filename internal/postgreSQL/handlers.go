@@ -3,7 +3,7 @@ package postgresql
 import (
 	"errors"
 	"fmt"
-	"serverdb/internal/domen"
+	"github.com/gintokos/serverdb/internal/domen"
 	"time"
 
 	"gorm.io/gorm"

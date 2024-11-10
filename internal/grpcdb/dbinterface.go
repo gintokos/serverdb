@@ -1,6 +1,6 @@
 package grpcdb
 
-import "serverdb/internal/domen"
+import "github.com/gintokos/serverdb/internal/domen"
 
 type DB interface {
 	MustInitDB() error

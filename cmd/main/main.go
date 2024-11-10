@@ -1,7 +1,7 @@
 package main
 
 import (
-	db "serverdb/internal"
+	db "github.com/gintokos/serverdb/internal"
 )
 
 func main() {

@@ -2,9 +2,9 @@ package db
 
 import (
 	"net"
-	"serverdb/internal/grpcdb"
-	postgresql "serverdb/internal/postgreSQL"
-	"serverdb/pkg/logger"
+	"github.com/gintokos/serverdb/internal/grpcdb"
+	postgresql "github.com/gintokos/serverdb/internal/postgreSQL"
+	"github.com/gintokos/serverdb/pkg/logger"
 
 	"google.golang.org/grpc"
 )

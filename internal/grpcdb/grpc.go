@@ -2,8 +2,8 @@ package grpcdb
 
 import (
 	"context"
-	"serverdb/pkg/logger"
-	generated "serverdb/protos/gen/v1"
+	"github.com/gintokos/serverdb/pkg/logger"
+	generated "github.com/gintokos/serverdb/protos/gen/v1"
 
 	"google.golang.org/grpc"
 )

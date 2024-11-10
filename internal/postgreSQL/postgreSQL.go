@@ -3,8 +3,8 @@ package postgresql
 import (
 	"database/sql"
 	"fmt"
-	"serverdb/internal/domen"
-	lg "serverdb/pkg/logger"
+	"github.com/gintokos/serverdb/internal/domen"
+	lg "github.com/gintokos/serverdb/pkg/logger"
 
 	_ "github.com/lib/pq"
 	"gorm.io/driver/postgres"
