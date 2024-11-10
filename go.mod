@@ -1,4 +1,4 @@
-module serverdb
+module github.com/gintokos/serverdb
 
 go 1.23.2
 
