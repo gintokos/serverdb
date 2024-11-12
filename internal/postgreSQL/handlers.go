@@ -3,8 +3,9 @@ package postgresql
 import (
 	"errors"
 	"fmt"
-	"github.com/gintokos/serverdb/internal/domen"
 	"time"
+
+	"github.com/gintokos/serverdb/internal/domain"
 
 	"gorm.io/gorm"
 )
@@ -24,7 +25,7 @@ func (postgre *PostgreSql) CreateUserRecord(id int64) error {
 		return fmt.Errorf("record with this id was created before")
 	}
 
-	record := domen.User{
+	record := domain.User{
 		TelegramID: id,
 		CreatedAt:  time.Now(),
 	}
@@ -36,10 +37,10 @@ func (postgre *PostgreSql) CreateUserRecord(id int64) error {
 	return nil
 }
 
-func (postgre *PostgreSql) GetUserRecord(id int64) (domen.User, error) {
+func (postgre *PostgreSql) GetUserRecord(id int64) (domain.User, error) {
 	db := postgre.db
 
-	var user domen.User
+	var user domain.User
 	result := db.First(&user, id)
 
 	if result.Error != nil {

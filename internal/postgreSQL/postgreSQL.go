@@ -3,7 +3,8 @@ package postgresql
 import (
 	"database/sql"
 	"fmt"
-	"github.com/gintokos/serverdb/internal/domen"
+
+	"github.com/gintokos/serverdb/internal/domain"
 	lg "github.com/gintokos/serverdb/pkg/logger"
 
 	_ "github.com/lib/pq"
@@ -46,7 +47,7 @@ func (postgre *PostgreSql) MustInitDB() error {
 		panic(err)
 	}
 
-	err = postgre.db.AutoMigrate(&domen.User{})
+	err = postgre.db.AutoMigrate(&domain.User{})
 	if err != nil {
 		postgre.logger.Error("Error on automigrating database: ", err)
 		panic(err)
